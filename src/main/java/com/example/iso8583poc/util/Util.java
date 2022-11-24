@@ -5,13 +5,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+
 @Service
 public class Util {
 
     public static final Map<Integer, ISO8583DataElement> iso8583DataElementMap =
         new HashMap<>() {
             {
-                for (var iso: ISO8583DataElement.values()) {
+                for (var iso : ISO8583DataElement.values()) {
                     put(iso.getIndexNumber(), iso);
                 }
             }

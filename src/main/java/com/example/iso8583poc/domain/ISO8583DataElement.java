@@ -41,7 +41,6 @@ public enum ISO8583DataElement {
     FLEET_DATA_2_COMPETION_AND_PRE_AUTH(63),
 
 
-
     UNKNOWN_DATA(-1),
     ;
 

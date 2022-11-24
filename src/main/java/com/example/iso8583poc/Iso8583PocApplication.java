@@ -20,7 +20,7 @@ public class Iso8583PocApplication {
 
         ISO8583GeneratorService generatorService = new ISO8583GeneratorService();
         var generatedISO8583Message = generatorService.generateISO8583Message();
-        System.out.println("New generated ISO message: " + generatedISO8583Message +"\n=============");
+        System.out.println("New generated ISO message: " + generatedISO8583Message + "\n=============");
         parserService.parseMessage(generatedISO8583Message);
     }
 

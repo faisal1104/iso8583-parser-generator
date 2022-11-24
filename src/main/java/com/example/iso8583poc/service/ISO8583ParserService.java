@@ -15,12 +15,12 @@ public class ISO8583ParserService {
         isoMsg.setPackager(packager);
         isoMsg.unpack(iso8584Message.getBytes());
 
-        System.out.println("MTI: "+ isoMsg.getMTI());
-        System.out.println("BitMaps: "+ getBitMaps(iso8584Message));
+        System.out.println("MTI: " + isoMsg.getMTI());
+        System.out.println("BitMaps: " + getBitMaps(iso8584Message));
 
         for (int i = 1; i <= isoMsg.getMaxField(); i++) {
             if (isoMsg.hasField(i)) {
-                System.out.println("Field-"+i+": "+ ISO8583DataElement.getByIndexNumber(i)+ ", Data: "+isoMsg.getValue(i));
+                System.out.println("Field-" + i + ": " + ISO8583DataElement.getByIndexNumber(i) + ", Data: " + isoMsg.getValue(i));
             }
         }
 
@@ -34,7 +34,7 @@ public class ISO8583ParserService {
         if (!hasSecondary) {
             return firstBitmap;
         }
-        return msg.substring(4,36);
+        return msg.substring(4, 36);
     }
 
     private static String hexToBinary(String s) {
@@ -45,6 +45,7 @@ public class ISO8583ParserService {
         }
         return result;
     }
+
     private static String hexToBinary(char Hex) {
         String[] staticLookup = new String[]{"0000", "0001", "0010", "0011", "0100", "0101", "0110", "0111", "1000", "1001", "1010", "1011", "1100", "1101", "1110", "1111"};
         return staticLookup[Integer.parseInt(Character.toString(Hex), 16)];
