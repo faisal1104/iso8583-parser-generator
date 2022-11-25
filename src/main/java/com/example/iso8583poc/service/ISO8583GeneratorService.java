@@ -26,7 +26,23 @@ public class ISO8583GeneratorService {
         isoMsg.set(37, "206305000014");
         isoMsg.set(41, "29110001");
         isoMsg.set(42, "1001001");
+        isoMsg.set(48, "1200000000");
         isoMsg.set(49, "840");
+
+        var result = isoMsg.pack();
+        return new String(result);
+    }
+
+    public String generateISO8583Message2() throws ISOException {
+        GenericPackager packager = new GenericPackager("ISOMsg.xml");
+
+        ISOMsg isoMsg = new ISOMsg();
+        isoMsg.setPackager(packager);
+
+        isoMsg.setMTI("0800");
+        isoMsg.set(3, "000000");
+        isoMsg.set(11, "000001");
+        isoMsg.set(41, "29110001");
 
         var result = isoMsg.pack();
         return new String(result);

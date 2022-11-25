@@ -245,7 +245,7 @@
 
     <isofield
             id="48"
-            length="999"
+            length="10"
             name="ADITIONAL DATA - PRIVATE"
             class="org.jpos.iso.IFA_LLLCHAR"/>
     <isofield
