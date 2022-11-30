@@ -44,4 +44,14 @@ public class Util {
         }
         return zoneOffset;
     }
+
+
+    public static String decimalToTwoBytesBinary(int decimalNumber){
+        var decimalToBinary = Integer.toBinaryString(decimalNumber);
+        return String.format("%016d", Integer.parseInt(decimalToBinary));
+    }
+
+    public static Integer binaryToDecimal(String binaryNumber){
+        return Integer.parseInt(binaryNumber, 2);
+    }
 }

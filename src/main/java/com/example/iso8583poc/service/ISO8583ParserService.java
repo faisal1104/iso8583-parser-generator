@@ -1,10 +1,13 @@
 package com.example.iso8583poc.service;
 
 import com.example.iso8583poc.domain.ISO8583DataElement;
+import com.example.iso8583poc.util.Util;
 import org.jpos.iso.ISOException;
 import org.jpos.iso.ISOMsg;
 import org.jpos.iso.packager.GenericPackager;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ISO8583ParserService {
 
 
@@ -32,9 +35,17 @@ public class ISO8583ParserService {
         return staticLookup[Integer.parseInt(Character.toString(Hex), 16)];
     }
 
-    public void parseMessage(String iso8584Message) throws ISOException {
-        ISOMsg isoMsg = new ISOMsg();
+    public void parseMessage(String iso8584MessageWithHeader) throws ISOException {
+        var messageLengthInByteData = iso8584MessageWithHeader.substring(0,16);
+        System.out.println("messageLengthInByteData : "+ messageLengthInByteData);
+        var messageLengthFromHeader = Util.binaryToDecimal(messageLengthInByteData);
+        System.out.println("ISO message length decoded from header : "+ messageLengthFromHeader);
 
+        var iso8584Message = iso8584MessageWithHeader.substring(16, iso8584MessageWithHeader.length());
+        System.out.println("Original iso8583 message : "+iso8584Message);
+        System.out.println("Length is : "+ iso8584Message.length());
+
+        ISOMsg isoMsg = new ISOMsg();
         GenericPackager packager = new GenericPackager("ISOMsg.xml");
         isoMsg.setPackager(packager);
         isoMsg.unpack(iso8584Message.getBytes());
@@ -47,6 +58,5 @@ public class ISO8583ParserService {
                 System.out.println("Field-" + i + ": " + ISO8583DataElement.getByIndexNumber(i) + ", Data: " + isoMsg.getValue(i));
             }
         }
-
     }
 }

@@ -1,9 +1,12 @@
 package com.example.iso8583poc.service;
 
+import com.example.iso8583poc.util.Util;
 import org.jpos.iso.ISOException;
 import org.jpos.iso.ISOMsg;
 import org.jpos.iso.packager.GenericPackager;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ISO8583GeneratorService {
 
     public String generateISO8583Message() throws ISOException {
@@ -30,7 +33,15 @@ public class ISO8583GeneratorService {
         isoMsg.set(49, "840");
 
         var result = isoMsg.pack();
-        return new String(result);
+        var iso8583Message = new String(result);
+
+        System.out.println("Original iso8583 message : "+iso8583Message);
+
+        var messageLength = iso8583Message.length();
+        System.out.println("Message lenth is : "+ messageLength);
+        var messageLengthInByteData = Util.decimalToTwoBytesBinary(messageLength);
+        System.out.println("Message lenth in two byte data : "+ messageLengthInByteData);
+        return messageLengthInByteData.concat(iso8583Message);
     }
 
     public String generateISO8583Message2() throws ISOException {
