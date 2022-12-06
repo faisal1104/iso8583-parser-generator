@@ -38,10 +38,10 @@ public class ISO8583GeneratorService {
         System.out.println("Original iso8583 message : "+iso8583Message);
 
         var messageLength = iso8583Message.length();
-        System.out.println("Message lenth is : "+ messageLength);
-        var messageLengthInByteData = Util.decimalToTwoBytesBinary(messageLength);
-        System.out.println("Message lenth in two byte data : "+ messageLengthInByteData);
-        return messageLengthInByteData.concat(iso8583Message);
+        System.out.println("Original ISO Message length is : "+ messageLength);
+        var messageLengthInByteHexData = Util.decimalToTwoByteHex(messageLength);
+        System.out.println("Message length in two byte hex data : "+ messageLengthInByteHexData);
+        return messageLengthInByteHexData.concat(iso8583Message);
     }
 
     public String generateISO8583Message2() throws ISOException {

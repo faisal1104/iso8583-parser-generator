@@ -36,12 +36,12 @@ public class ISO8583ParserService {
     }
 
     public void parseMessage(String iso8584MessageWithHeader) throws ISOException {
-        var messageLengthInByteData = iso8584MessageWithHeader.substring(0,16);
-        System.out.println("messageLengthInByteData : "+ messageLengthInByteData);
-        var messageLengthFromHeader = Util.binaryToDecimal(messageLengthInByteData);
+        var messageLengthInTwoByteHex = iso8584MessageWithHeader.substring(0,4);
+        System.out.println("Message length in two byte HEX data : "+ messageLengthInTwoByteHex);
+        var messageLengthFromHeader = Util.hexToDecimal(messageLengthInTwoByteHex);
         System.out.println("ISO message length decoded from header : "+ messageLengthFromHeader);
 
-        var iso8584Message = iso8584MessageWithHeader.substring(16, iso8584MessageWithHeader.length());
+        var iso8584Message = iso8584MessageWithHeader.substring(4);
         System.out.println("Original iso8583 message : "+iso8584Message);
         System.out.println("Length is : "+ iso8584Message.length());
 

@@ -1,6 +1,7 @@
 package com.example.iso8583poc.util;
 
 import com.example.iso8583poc.domain.ISO8583DataElement;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -45,13 +46,23 @@ public class Util {
         return zoneOffset;
     }
 
+    public static String decimalToTwoByteHex(int decimalNumber){
+        var hex = Integer.toHexString(decimalNumber);
+        // For example : 34 -> 0022
+        return StringUtils.leftPad(hex, 4, '0');
+    }
+
+    public static Integer hexToDecimal(String hexNumber){
+        return Integer.parseInt(hexNumber, 16);
+    }
+
+
+/*    public static Integer binaryToDecimal(String binaryNumber){
+        return Integer.parseInt(binaryNumber, 2);
+    }
 
     public static String decimalToTwoBytesBinary(int decimalNumber){
         var decimalToBinary = Integer.toBinaryString(decimalNumber);
         return String.format("%016d", Integer.parseInt(decimalToBinary));
-    }
-
-    public static Integer binaryToDecimal(String binaryNumber){
-        return Integer.parseInt(binaryNumber, 2);
-    }
+    }*/
 }
