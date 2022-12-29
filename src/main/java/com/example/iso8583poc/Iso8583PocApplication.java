@@ -11,9 +11,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 @SpringBootApplication
 public class Iso8583PocApplication {
 
-    private static String iso8583Message = "0800202000000080000000000000000129110001";
-    private static String iso8583Message2 = "0800A02000000080001004000000000000000000000000013239313130303031001054455354204D455353470301";
-
     public static void main(String[] args) throws ISOException {
         ConfigurableApplicationContext ctx = SpringApplication.run(Iso8583PocApplication.class, args);
 
@@ -21,7 +18,7 @@ public class Iso8583PocApplication {
         ISO8583GeneratorService generatorService = new ISO8583GeneratorService();
         var generatedISO8583Message = generatorService.generateISO8583Message();
         System.out.println("New generated ISO message: \n" + generatedISO8583Message + "\n\n===================");
-
+        parser(generatedISO8583Message);
 
         NettyWebServer nettyWebServer = ctx.getBeanFactory().getBean(NettyWebServer.class);
         nettyWebServer.runWebServer();
@@ -31,7 +28,7 @@ public class Iso8583PocApplication {
     private static void parser(String generatedISO8583Message) throws ISOException {
         ISO8583ParserService parserService = new ISO8583ParserService();
         System.out.println(" \n ----------------Now Parsing----------------------- \n");
-        parserService.parseMessage(generatedISO8583Message);
+        parserService.parseHexMessage("00808220000000000000040000000000000010250844360000040003333031");
         System.out.println(" \n --------------------------------------- \n");
     }
 }

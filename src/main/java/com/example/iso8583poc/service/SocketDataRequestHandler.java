@@ -21,7 +21,7 @@ public class SocketDataRequestHandler {
     public String handleRequest(String messageText) throws JsonProcessingException, ISOException {
         ISo8583DataRequest request = objectMapper.readValue(messageText, ISo8583DataRequest.class);
 
-        iso8583ParserService.parseMessage(request.getMessage());
+        iso8583ParserService.parseHexMessage(request.getMessage());
 
         return objectMapper.writeValueAsString(new ISo8583DataResponse().setMessage("Request Accepted"));
     }
