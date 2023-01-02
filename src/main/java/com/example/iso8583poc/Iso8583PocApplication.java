@@ -18,7 +18,7 @@ public class Iso8583PocApplication {
         ISO8583GeneratorService generatorService = new ISO8583GeneratorService();
         var generatedISO8583Message = generatorService.generateISO8583Message();
         System.out.println("New generated ISO message: \n" + generatedISO8583Message + "\n\n===================");
-        parser(generatedISO8583Message);
+        //parser(generatedISO8583Message);
 
         NettyWebServer nettyWebServer = ctx.getBeanFactory().getBean(NettyWebServer.class);
         nettyWebServer.runWebServer();
@@ -28,7 +28,7 @@ public class Iso8583PocApplication {
     private static void parser(String generatedISO8583Message) throws ISOException {
         ISO8583ParserService parserService = new ISO8583ParserService();
         System.out.println(" \n ----------------Now Parsing----------------------- \n");
-        parserService.parseHexMessage("00808220000000000000040000000000000010250844360000040003333031");
+        parserService.parseHexMessage(generatedISO8583Message);
         System.out.println(" \n --------------------------------------- \n");
     }
 }
