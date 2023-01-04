@@ -1,4 +1,4 @@
-package com.example.iso8583poc.domain;
+package com.example.iso8583poc.domain.iso8583;
 
 import com.example.iso8583poc.util.Util;
 import lombok.AllArgsConstructor;
@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum ISO8583DataElement {
+public enum ISO8583DataElementType {
     PRIMARY_BIT_MAP(0),
     SECONDARY_BIT_MAP(1),
     ACCOUNT_NUMBER(2),
@@ -38,7 +38,7 @@ public enum ISO8583DataElement {
     ADDITIONAL_POS_INFORMATION(60),
     BRAND_CODE_TO_SETTLEMENT(61),
     TICKET_NUMBER(63),
-    FLEET_DATA_2_COMPETION_AND_PRE_AUTH(63),
+    FLEET_DATA_TWO(63),
     SETTLEMENT_INSTITUTION_COUNTRY_CODE(69),
     NETWORK_MANAGEMENT_INFORMATION_CODE(70),
 
@@ -49,9 +49,9 @@ public enum ISO8583DataElement {
 
     private final int indexNumber;
 
-    public static ISO8583DataElement getByIndexNumber(int indexNumber) {
+    public static ISO8583DataElementType getByIndexNumber(int indexNumber) {
         if (Util.iso8583DataElementMap.containsKey(indexNumber))
             return Util.iso8583DataElementMap.get(indexNumber);
-        return ISO8583DataElement.UNKNOWN_DATA;
+        return ISO8583DataElementType.UNKNOWN_DATA;
     }
 }

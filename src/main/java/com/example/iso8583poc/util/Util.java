@@ -1,6 +1,6 @@
 package com.example.iso8583poc.util;
 
-import com.example.iso8583poc.domain.ISO8583DataElement;
+import com.example.iso8583poc.domain.iso8583.ISO8583DataElementType;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -16,43 +16,25 @@ import java.util.Objects;
 @Service
 public class Util {
 
-    public static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyMMdd");
-    public static final DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HHmmss");
+    public static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MMdd");
+    public static final DateTimeFormatter ISO8583_TIME_FORMAT = DateTimeFormatter.ofPattern("HHmmss");
 
-    public static final Map<Integer, ISO8583DataElement> iso8583DataElementMap =
+    public static final Map<Integer, ISO8583DataElementType> iso8583DataElementMap =
         new HashMap<>() {
             {
-                for (var iso : ISO8583DataElement.values()) {
+                for (var iso : ISO8583DataElementType.values()) {
                     put(iso.getIndexNumber(), iso);
                 }
             }
         };
 
-    public static OffsetDateTime generateDateTime(String date, String time, String timezone) {
-        var localDate = LocalDate.parse(date, dateFormat);
-        var localTime = LocalTime.parse(time, timeFormat);
-        return OffsetDateTime.of(localDate, localTime, getZoneOffsetByTimezone(timezone));
-    }
-
-    public static ZoneOffset getZoneOffsetByTimezone(String timezone) {
-        ZoneOffset zoneOffset = ZoneOffset.UTC;
-        if (Objects.nonNull(timezone)) {
-            try {
-                zoneOffset = ZoneOffset.of(timezone);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-        return zoneOffset;
-    }
-
-    public static String decimalToTwoByteHex(int decimalNumber){
+    public static String decimalToTwoByteHex(int decimalNumber) {
         var hex = Integer.toHexString(decimalNumber);
         // For example : 34 -> 0022
         return StringUtils.leftPad(hex, 4, '0');
     }
 
-    public static Integer hexToDecimal(String hexNumber){
+    public static Integer hexToDecimal(String hexNumber) {
         return Integer.parseInt(hexNumber, 16);
     }
 
@@ -65,4 +47,12 @@ public class Util {
         var decimalToBinary = Integer.toBinaryString(decimalNumber);
         return String.format("%016d", Integer.parseInt(decimalToBinary));
     }*/
+
+    public static String formattedFuelCode(String fuelCode) {
+        return StringUtils.rightPad(fuelCode, 10, '0');
+    }
+
+    public static LocalTime getLocalTimeFromString(String localTime) {
+        return LocalTime.parse(localTime, ISO8583_TIME_FORMAT);
+    }
 }

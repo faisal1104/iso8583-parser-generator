@@ -7,6 +7,6 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class ISo8583DataResponse {
+public class ServerDataRequest {
     private String message;
 }

@@ -1,4 +1,4 @@
-package com.example.iso8583poc.domain;
+package com.example.iso8583poc.domain.iso8583;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
