@@ -5,6 +5,8 @@ import com.example.iso8583poc.domain.iso8583.ISO8583DataElementType;
 import com.example.iso8583poc.domain.iso8583.MessageTypeIndicator;
 import com.example.iso8583poc.service.preauth.PreAuthRequestHandler;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 import org.jpos.iso.ISOException;
 import org.jpos.iso.ISOMsg;
@@ -45,16 +47,23 @@ public class ISO8583ParserService {
         return staticLookup[Integer.parseInt(Character.toString(Hex), 16)];
     }
 
-    public Map<String, String> parseAndPrintHexMessage(String iso8583HexMessage) throws ISOException {
-        Map<String, String> responseMap = new LinkedHashMap<>();
+    public Map<String, String> parseAndPrintHexMessage(String iso8583HexMessage, boolean isHeaderExist) throws ISOException, DecoderException {
+        if (isHeaderExist) {
+            //If header exist then there will be 2 byte MessageLengthHeader and 5 byte TPDU header
+            var messageLengthAndTPDUHeader = iso8583HexMessage.substring(0, 14);
+            System.out.println("MessageLengthAndTPDUHeader : " + messageLengthAndTPDUHeader);
+            iso8583HexMessage = iso8583HexMessage.substring(14);
+        }
+
         System.out.println("Original iso8583 message : " + iso8583HexMessage);
-        System.out.println("Length is : " + iso8583HexMessage.length());
+        System.out.println("Length is : " + Hex.decodeHex(iso8583HexMessage).length + "byte");
 
         ISOMsg isoMsg = new ISOMsg();
         isoMsg.setPackager(packager);
         var byteRepresentationOfHexMessage = ISOUtil.hex2byte(iso8583HexMessage);
         isoMsg.unpack(byteRepresentationOfHexMessage);
 
+        Map<String, String> responseMap = new LinkedHashMap<>();
         responseMap.put("MTI", MessageTypeIndicator.getMessageTypeIndicatorByCode(isoMsg.getMTI()).name());
 
         System.out.println("MTI: " + MessageTypeIndicator.getMessageTypeIndicatorByCode(isoMsg.getMTI()));
