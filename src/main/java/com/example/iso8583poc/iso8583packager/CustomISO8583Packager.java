@@ -1,4 +1,4 @@
-package com.example.iso8583poc.custom_iso8583_packager;
+package com.example.iso8583poc.iso8583packager;
 
 import org.jpos.iso.*;
 
@@ -11,7 +11,7 @@ import org.jpos.iso.*;
  * @see ISOBasePackager
  * @see ISOComponent
  */
-public class CPayISO8583Packager extends ISOBasePackager {
+public class CustomISO8583Packager extends ISOBasePackager {
     private static final boolean pad = false;
     protected ISOFieldPackager[] fld = {
         /*000*/    new IFB_NUMERIC(4, "MESSAGE TYPE INDICATOR", true),
@@ -145,7 +145,7 @@ public class CPayISO8583Packager extends ISOBasePackager {
         /*128*/    new IFB_BINARY(8, "MAC 2")
     };
 
-    public CPayISO8583Packager() {
+    public CustomISO8583Packager() {
         super();
         setFieldPackager(fld);
     }

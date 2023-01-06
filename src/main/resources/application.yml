@@ -1,0 +1,23 @@
+iso8583:
+  header:
+    active: true
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 1000
+        readTimeout: 10000
+
+auth:
+  server:
+    url: http://localhost:5030/auth
+
+fleet:
+  server:
+    url: http://localhost:5030/fleet
+
+dummy:
+  username: faisal_company_2022c@yopmail.com
+  password: Aa&12345
+

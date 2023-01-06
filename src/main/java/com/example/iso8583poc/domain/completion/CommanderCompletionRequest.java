@@ -1,4 +1,4 @@
-package com.example.iso8583poc.domain.preauth;
+package com.example.iso8583poc.domain.completion;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,11 +11,8 @@ import java.time.LocalTime;
 @Setter
 @Accessors(chain = true)
 @ToString
-public class CommanderPreAuthRequest {
+public class CommanderCompletionRequest {
     private String cardNumber;
-    private String driverCode;
-    private String vehicleCode;
-    private String odoMeter;
     private String processingCode = "000000";
     private String transactionValue;
     private LocalTime transactionLocalHour;
@@ -25,5 +22,6 @@ public class CommanderPreAuthRequest {
     private String posEntryMode;
     private String acquirerIdCode;
     private String systemTraceNumber;
-    private String posConditionCode = "00";
+    private String posConditionCode = "06";
+    private String fleetDataTwo;
 }

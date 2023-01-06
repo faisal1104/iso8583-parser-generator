@@ -16,7 +16,7 @@ public enum MessageTypeIndicator {
     NETWORK_MANAGEMENT_RESPONSE("0810"),
 
 
-    INVALID_MESSAGE_TYPE("0000"),
+    UNKNOWN_MTI("XXXX"),
     ;
 
     private final String code;
@@ -26,6 +26,6 @@ public enum MessageTypeIndicator {
             if (messageType.getCode().equals(code))
                 return messageType;
         }
-        return MessageTypeIndicator.INVALID_MESSAGE_TYPE;
+        return MessageTypeIndicator.UNKNOWN_MTI;
     }
 }

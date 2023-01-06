@@ -1,27 +1,30 @@
 package com.example.iso8583poc.service.iso8583;
 
-import com.example.iso8583poc.custom_iso8583_packager.CPayISO8583Packager;
+import com.example.iso8583poc.iso8583packager.CustomISO8583Packager;
 import com.example.iso8583poc.domain.iso8583.ISO8583DataElementType;
 import com.example.iso8583poc.domain.iso8583.MessageTypeIndicator;
-import com.example.iso8583poc.service.preauth.PreAuthRequestHandler;
+import com.example.iso8583poc.domain.iso8583.ParsedISO8583MessageInformation;
+import com.example.iso8583poc.util.Util;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang3.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.jpos.iso.ISOException;
 import org.jpos.iso.ISOMsg;
 import org.jpos.iso.ISOUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ISO8583ParserService {
 
-    private static final CPayISO8583Packager packager = new CPayISO8583Packager();
-    private final PreAuthRequestHandler preAuthRequestHandler;
+    @Value("${iso8583.header.active}")
+    private boolean isAdditionalHeaderExistInISO8583Message;
+
+    private static final CustomISO8583Packager packager = new CustomISO8583Packager();
 
     private static String getBitMaps(String msg) {
         String firstBitmap = msg.substring(4, 20);
@@ -47,41 +50,13 @@ public class ISO8583ParserService {
         return staticLookup[Integer.parseInt(Character.toString(Hex), 16)];
     }
 
-    public Map<String, String> parseAndPrintHexMessage(String iso8583HexMessage, boolean isHeaderExist) throws ISOException, DecoderException {
-        if (isHeaderExist) {
-            //If header exist then there will be 2 byte MessageLengthHeader and 5 byte TPDU header
-            var messageLengthAndTPDUHeader = iso8583HexMessage.substring(0, 14);
-            System.out.println("MessageLengthAndTPDUHeader : " + messageLengthAndTPDUHeader);
-            iso8583HexMessage = iso8583HexMessage.substring(14);
+    public ParsedISO8583MessageInformation parseHexMessage(String iso8583HexMessage) throws ISOException {
+        if (isAdditionalHeaderExistInISO8583Message) {
+            log.info("Message Length & TPDU header is present in this message");
+            var totalHeaderLength = Util.getTotalHeaderLengthOfISOMessage();
+            this.parseTPDUHeader(iso8583HexMessage.substring(Util.MESSAGE_LENGTH_HEADER_BYTE * 2, totalHeaderLength));
+            iso8583HexMessage = iso8583HexMessage.substring(totalHeaderLength);
         }
-
-        System.out.println("Original iso8583 message : " + iso8583HexMessage);
-        System.out.println("Length is : " + Hex.decodeHex(iso8583HexMessage).length + "byte");
-
-        ISOMsg isoMsg = new ISOMsg();
-        isoMsg.setPackager(packager);
-        var byteRepresentationOfHexMessage = ISOUtil.hex2byte(iso8583HexMessage);
-        isoMsg.unpack(byteRepresentationOfHexMessage);
-
-        Map<String, String> responseMap = new LinkedHashMap<>();
-        responseMap.put("MTI", MessageTypeIndicator.getMessageTypeIndicatorByCode(isoMsg.getMTI()).name());
-
-        System.out.println("MTI: " + MessageTypeIndicator.getMessageTypeIndicatorByCode(isoMsg.getMTI()));
-        System.out.println("MTI Code: " + isoMsg.getMTI());
-        System.out.println("BitMaps: " + getBitMaps(iso8583HexMessage));
-
-        for (int i = 1; i <= isoMsg.getMaxField(); i++) {
-            if (isoMsg.hasField(i)) {
-                var iso8583DataElement = ISO8583DataElementType.getByIndexNumber(i);
-                var value = String.valueOf(isoMsg.getValue(i));
-                System.out.println("Field-" + i + ": " + iso8583DataElement + ", Data: " + value);
-                responseMap.put(iso8583DataElement.name(), value);
-            }
-        }
-        return responseMap;
-    }
-
-    public String parseHexMessageAndGetCommanderPreAuthRequest(String iso8583HexMessage) throws ISOException {
 
         System.out.println("Original iso8583 message : " + iso8583HexMessage);
         System.out.println("Length is : " + iso8583HexMessage.length());
@@ -92,42 +67,22 @@ public class ISO8583ParserService {
         isoMsg.unpack(byteRepresentationOfHexMessage);
 
         var messageTypeIndicator = MessageTypeIndicator.getMessageTypeIndicatorByCode(isoMsg.getMTI());
+        var bitMaps = getBitMaps(iso8583HexMessage);
         System.out.println("MTI: " + messageTypeIndicator);
         System.out.println("MTI Code: " + isoMsg.getMTI());
-        System.out.println("BitMaps: " + getBitMaps(iso8583HexMessage));
+        System.out.println("BitMaps: " + bitMaps);
 
-        if (messageTypeIndicator.equals(MessageTypeIndicator.PRE_AUTH_REQUEST)) {
-            return preAuthRequestHandler.handlePreAuthRequest(isoMsg);
-        } else
-            return StringUtils.EMPTY;
-    }
-
-    public void parseHexMessageWithAdditionalHeader(String messageToParse) throws ISOException {
-
-        var twoByteHeaderLength = messageToParse.substring(0, 4);
-        System.out.println("Header Length in Byte: " + twoByteHeaderLength);
-        System.out.println("Header Length in decimal: " + Integer.parseInt(twoByteHeaderLength, 16));
-
-        var TPDUHeader = messageToParse.substring(4, 14);
-        System.out.println("TPDUHeader" + TPDUHeader);
-        this.parseTPDUHeader(TPDUHeader);
-
-        var iso8583HexMessage = messageToParse.substring(14);
-        System.out.println("Original iso8583 message : " + iso8583HexMessage);
-
-        ISOMsg isoMsg = new ISOMsg();
-        isoMsg.setPackager(packager);
-        var byteRepresentationOfHexMessage = ISOUtil.hex2byte(iso8583HexMessage);
-        isoMsg.unpack(byteRepresentationOfHexMessage);
-        System.out.println("MTI: " + MessageTypeIndicator.getMessageTypeIndicatorByCode(isoMsg.getMTI()));
-        System.out.println("MTI Code: " + isoMsg.getMTI());
-        System.out.println("BitMaps: " + getBitMaps(iso8583HexMessage));
-
-        for (int i = 1; i <= isoMsg.getMaxField(); i++) {
-            if (isoMsg.hasField(i)) {
-                System.out.println("Field-" + i + ": " + ISO8583DataElementType.getByIndexNumber(i) + ", Data: " + isoMsg.getValue(i));
+        Map<ISO8583DataElementType, String> isoDataElementValueMap = new LinkedHashMap<>();
+        for (int fieldNumber = 1; fieldNumber <= isoMsg.getMaxField(); fieldNumber++) {
+            if (isoMsg.hasField(fieldNumber)) {
+                var iso8583DataElement = ISO8583DataElementType.getByIndexNumber(fieldNumber);
+                var value = String.valueOf(isoMsg.getValue(fieldNumber));
+                System.out.println("Field-" + fieldNumber + ": " + iso8583DataElement + ", Data: " + value);
+                isoDataElementValueMap.put(iso8583DataElement, value);
             }
         }
+
+        return new ParsedISO8583MessageInformation(messageTypeIndicator, bitMaps, isoDataElementValueMap);
     }
 
     private void parseTPDUHeader(String TPDUHeader) {

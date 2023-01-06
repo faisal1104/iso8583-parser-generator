@@ -8,5 +8,5 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(chain = true)
 public class ServerDataResponse {
-    private String message;
+    private String responseMessage;
 }

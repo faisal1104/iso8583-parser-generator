@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-@FeignClient(name = "fleet-service", url = "http://localhost:5030/fleet")
+@FeignClient(name = "fleet-service", url = "${fleet.server.url}")
 public interface FleetClient {
 
     @PostMapping("validate-fleet-rule")

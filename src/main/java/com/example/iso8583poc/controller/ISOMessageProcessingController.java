@@ -1,15 +1,15 @@
 package com.example.iso8583poc.controller;
 
+import com.example.iso8583poc.domain.completion.CommanderCompletionRequest;
+import com.example.iso8583poc.domain.iso8583.ISO8583MessageInformationRequest;
+import com.example.iso8583poc.domain.iso8583.ISO8583MessageResponse;
+import com.example.iso8583poc.domain.iso8583.ParsedISO8583MessageInformation;
+import com.example.iso8583poc.domain.preauth.CommanderPreAuthRequest;
 import com.example.iso8583poc.service.iso8583.ISO8583GeneratorService;
 import com.example.iso8583poc.service.iso8583.ISO8583ParserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,9 +20,9 @@ public class ISOMessageProcessingController {
     private final ISO8583GeneratorService generatorService;
 
     @GetMapping("parse")
-    public ResponseEntity<Map<String, String>> getParsedISOHexMessage(@RequestParam String message, @RequestParam(required = false) boolean isHeaderExist) {
+    public ResponseEntity<ParsedISO8583MessageInformation> getParsedISOHexMessage(@RequestParam String message) {
         try {
-            return ResponseEntity.ok(parserService.parseAndPrintHexMessage(message, isHeaderExist));
+            return ResponseEntity.ok(parserService.parseHexMessage(message));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -30,10 +30,45 @@ public class ISOMessageProcessingController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("generate-pre-ath-request")
-    public ResponseEntity<String> generatePreAuthRequestISO8583Message() {
+    @PostMapping("generate")
+    public ResponseEntity<ISO8583MessageResponse> getParsedISOHexMessage(@RequestBody ISO8583MessageInformationRequest request) {
         try {
-            return ResponseEntity.ok(generatorService.generatePreAuthRequestISO8583Message());
+            var response = generatorService.generateISO8583Message(request);
+            return ResponseEntity.ok(new ISO8583MessageResponse(response));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("generate-pre-ath-request")
+    public ResponseEntity<ISO8583MessageResponse> generatePreAuthRequestISO8583Message(@RequestBody CommanderPreAuthRequest preAuthRequest) {
+        try {
+            var response = generatorService.generatePreAuthRequestISO8583Message(preAuthRequest);
+            return ResponseEntity.ok(new ISO8583MessageResponse(response));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("generate-completion-request")
+    public ResponseEntity<ISO8583MessageResponse> generateCompletionRequestISO8583Message(@RequestBody CommanderCompletionRequest completionRequest) {
+        try {
+            var response = generatorService.generateCompletionRequestISO8583Message(completionRequest);
+            return ResponseEntity.ok(new ISO8583MessageResponse(response));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("generate-echo-test-request")
+    public ResponseEntity<ISO8583MessageResponse> generateEchoTestRequestISO8583Message() {
+        try {
+            var response = generatorService.generateEchoTestRequestISO8583Message();
+            return ResponseEntity.ok(new ISO8583MessageResponse(response));
         } catch (Exception e) {
             e.printStackTrace();
         }

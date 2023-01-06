@@ -15,6 +15,9 @@ public class Util {
     public static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MMdd");
     public static final DateTimeFormatter ISO8583_TIME_FORMAT = DateTimeFormatter.ofPattern("HHmmss");
 
+    public static final int MESSAGE_LENGTH_HEADER_BYTE = 2;
+    public static final int TPDU_HEADER_BYTE = 5;
+
     public static final Map<Integer, ISO8583DataElementType> iso8583DataElementMap =
         new HashMap<>() {
             {
@@ -50,5 +53,9 @@ public class Util {
 
     public static LocalTime getLocalTimeFromString(String localTime) {
         return LocalTime.parse(localTime, ISO8583_TIME_FORMAT);
+    }
+
+    public static int getTotalHeaderLengthOfISOMessage() {
+        return MESSAGE_LENGTH_HEADER_BYTE * 2 + TPDU_HEADER_BYTE * 2;
     }
 }
